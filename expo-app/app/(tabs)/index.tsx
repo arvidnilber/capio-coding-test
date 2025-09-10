@@ -17,7 +17,7 @@ export default function HomeScreen() {
     const { user, updateUser, logout, isAuthenticated } = useAuthStore();
     const [isLoading, setIsLoading] = React.useState(false);
     const theme = useTheme();
-    console.log("user", user);
+
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const fetchUserData = useCallback(async () => {

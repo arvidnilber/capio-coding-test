@@ -39,14 +39,7 @@ export const useAppState = () => {
                     console.log("App came to foreground");
 
                     // Check if user should still be authenticated
-                    const stillAuthenticated = checkAuthStatus();
-
-                    if (!stillAuthenticated) {
-                        console.log(
-                            "User logged out due to background timeout"
-                        );
-                        logout();
-                    }
+                    checkAuthStatus();
 
                     // Clear background time when returning to foreground
                     setBackgroundTime(0);

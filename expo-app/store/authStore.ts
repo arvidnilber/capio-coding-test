@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { MMKV } from "react-native-mmkv";
 import type { User, AuthTokens, AuthResponse } from "@/types/api";
+import { router } from "expo-router";
 
 // MMKV storage instance
 const storage = new MMKV();
@@ -76,7 +77,6 @@ interface AuthState {
     checkAuthStatus: () => boolean;
 
     // Persistence helpers
-    loadFromStorage: () => void;
     clearStorage: () => void;
 }
 
@@ -133,6 +133,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             error: null,
             lastBackgroundTime: null,
         });
+
+        router.replace("/login");
     },
 
     refreshTokens: async () => {
@@ -202,47 +204,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         return true;
-    },
-
-    loadFromStorage: () => {
-        try {
-            const accessToken = storage.getString(STORAGE_KEYS.ACCESS_TOKEN);
-            const refreshToken = storage.getString(STORAGE_KEYS.REFRESH_TOKEN);
-            const accessTokenExp = storage.getNumber(
-                STORAGE_KEYS.ACCESS_TOKEN_EXP
-            );
-            const refreshTokenExp = storage.getNumber(
-                STORAGE_KEYS.REFRESH_TOKEN_EXP
-            );
-            const userData = storage.getString(STORAGE_KEYS.USER_DATA);
-            const lastBackgroundTime = storage.getNumber(
-                STORAGE_KEYS.LAST_BACKGROUND_TIME
-            );
-
-            if (
-                accessToken &&
-                refreshToken &&
-                accessTokenExp &&
-                refreshTokenExp
-            ) {
-                const tokens = {
-                    accessToken,
-                    refreshToken,
-                    accessTokenExp,
-                    refreshTokenExp,
-                } as AuthTokens;
-
-                set({
-                    tokens,
-                    isAuthenticated: get().checkAuthStatus(),
-                    user: userData ? JSON.parse(userData) : null,
-                    lastBackgroundTime: lastBackgroundTime || null,
-                });
-            }
-        } catch (err) {
-            console.error("Failed to load from storage:", err);
-            get().clearStorage();
-        }
     },
 
     clearStorage: () => {

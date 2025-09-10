@@ -7,11 +7,11 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useAuthStore } from "@/store/authStore";
+
 import { useAppState } from "@/hooks/useAppState";
 export type CustomTheme = Theme & {
     colors: {
@@ -20,7 +20,6 @@ export type CustomTheme = Theme & {
 };
 export default function RootLayout() {
     const colorScheme = useColorScheme();
-    const { loadFromStorage } = useAuthStore();
 
     // Initialize app state monitoring
     useAppState();
@@ -28,11 +27,6 @@ export default function RootLayout() {
     const [loaded] = useFonts({
         SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     });
-
-    // Load auth state from storage on app start
-    useEffect(() => {
-        loadFromStorage();
-    }, [loadFromStorage]);
 
     if (!loaded) {
         // Async font loading only occurs in development.
