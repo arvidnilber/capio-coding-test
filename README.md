@@ -15,4 +15,10 @@ If I had more time (and this was for a real project) I would've used Nativewind 
 
 Thank you for your time and hope you don't have any issues running this locally. It was a fun and well thought out code test.
 
+Short demo (small file upload limit on GitHub):
+
+https://github.com/user-attachments/assets/43364ddb-e198-4b47-8aa4-9fed25a33fc7
+
+
+
 / Arvid Nilber
