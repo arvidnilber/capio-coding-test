@@ -1,0 +1,25 @@
+{
+  "name": "auth-api",
+  "version": "1.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/src/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.17.1",
+    "@hono/zod-openapi": "^1.0.2",
+    "@scalar/hono-api-reference": "^0.9.12",
+    "hono": "^4.8.7",
+    "jose": "^6.0.12",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "zod": "^4.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}
