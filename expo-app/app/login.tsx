@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -12,12 +12,15 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
+import { Theme, useTheme } from "@react-navigation/native";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function LoginScreen() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const { login, isLoading, error, clearError } = useAuthStore();
-
+    const theme = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
     const handleLogin = async () => {
         if (!username.trim() || !password.trim()) {
             Alert.alert("Error", "Please enter both username and password");
@@ -44,8 +47,12 @@ export default function LoginScreen() {
         >
             <View style={styles.content}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Welcome Back</Text>
-                    <Text style={styles.subtitle}>Sign in to your account</Text>
+                    <ThemedText style={styles.title} type="title">
+                        Welcome to Capio Test
+                    </ThemedText>
+                    <ThemedText style={styles.subtitle} type="subtitle">
+                        Sign in to your account
+                    </ThemedText>
                 </View>
 
                 <View style={styles.form}>
@@ -103,7 +110,7 @@ export default function LoginScreen() {
                         disabled={isLoading}
                     >
                         <Text style={styles.testButtonText}>
-                            Use Test Credentials
+                            Fill in test credentials
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -112,88 +119,87 @@ export default function LoginScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#f5f5f5",
-    },
-    content: {
-        flex: 1,
-        justifyContent: "center",
-        paddingHorizontal: 24,
-    },
-    header: {
-        alignItems: "center",
-        marginBottom: 48,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: "#666",
-    },
-    form: {
-        width: "100%",
-    },
-    inputContainer: {
-        marginBottom: 24,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#333",
-        marginBottom: 8,
-    },
-    input: {
-        height: 52,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        fontSize: 16,
-        backgroundColor: "white",
-    },
-    errorContainer: {
-        backgroundColor: "#fee",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 24,
-        borderLeftWidth: 4,
-        borderLeftColor: "#f56565",
-    },
-    errorText: {
-        color: "#c53030",
-        fontSize: 14,
-        fontWeight: "500",
-    },
-    loginButton: {
-        height: 52,
-        backgroundColor: "#007AFF",
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    loginButtonDisabled: {
-        backgroundColor: "#ccc",
-    },
-    loginButtonText: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "600",
-    },
-    testButton: {
-        height: 44,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    testButtonText: {
-        color: "#007AFF",
-        fontSize: 16,
-        fontWeight: "500",
-    },
-});
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
+        },
+        content: {
+            flex: 1,
+            justifyContent: "center",
+            paddingHorizontal: 24,
+        },
+        header: {
+            alignItems: "center",
+            marginBottom: 48,
+        },
+        title: {
+            fontSize: 32,
+            marginBottom: 8,
+        },
+        subtitle: {
+            fontSize: 16,
+        },
+        form: {
+            width: "100%",
+        },
+        inputContainer: {
+            marginBottom: 24,
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: "600",
+            color: theme.colors.text,
+            marginBottom: 8,
+        },
+        input: {
+            height: 52,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 16,
+            color: theme.colors.text,
+            fontSize: 16,
+            backgroundColor: theme.colors.card,
+        },
+        errorContainer: {
+            backgroundColor: "#fee",
+            padding: 12,
+            borderRadius: 8,
+            marginBottom: 24,
+            borderLeftWidth: 4,
+            borderLeftColor: "#f56565",
+        },
+        errorText: {
+            color: "#c53030",
+            fontSize: 14,
+            fontWeight: "500",
+        },
+        loginButton: {
+            height: 52,
+            backgroundColor: theme.colors.primary,
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 16,
+        },
+        loginButtonDisabled: {
+            backgroundColor: "#ccc",
+        },
+        loginButtonText: {
+            color: "white",
+            fontSize: 18,
+            fontWeight: "600",
+        },
+        testButton: {
+            height: 44,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        testButtonText: {
+            color: theme.colors.text,
+            fontSize: 16,
+            fontWeight: "500",
+        },
+    });

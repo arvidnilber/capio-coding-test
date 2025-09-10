@@ -96,7 +96,7 @@ export default function ProfileScreen() {
             <View style={styles.content}>
                 <View style={styles.card}>
                     <ThemedText type="title" style={styles.cardTitle}>
-                        Phone Number
+                        Phone number
                     </ThemedText>
                     <ThemedText type="subtitle" style={styles.description}>
                         Update your phone number to keep your account secure.
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
                             <ActivityIndicator color="white" />
                         ) : (
                             <Text style={styles.saveButtonText}>
-                                Save Phone Number
+                                {user?.phone ? "Update" : "Save"}
                             </Text>
                         )}
                     </TouchableOpacity>
@@ -192,7 +192,7 @@ const createStyles = (theme: CustomTheme) =>
             backgroundColor: theme.colors.card,
             borderRadius: 12,
             padding: 20,
-            marginBottom: 24,
+            marginBottom: 15,
             shadowColor: "#000",
             shadowOffset: {
                 width: 0,
@@ -281,7 +281,9 @@ const createStyles = (theme: CustomTheme) =>
             justifyContent: "center",
             alignItems: "center",
             borderWidth: 1,
-            borderColor: theme.colors.primary,
+            borderColor: theme.dark
+                ? theme.colors.border
+                : theme.colors.primary,
         },
         refreshButtonText: {
             color: theme.colors.text,
@@ -289,14 +291,15 @@ const createStyles = (theme: CustomTheme) =>
             fontWeight: "500",
         },
         logoutButton: {
-            backgroundColor: theme.colors.card,
-            height: 52,
+            backgroundColor: "#ff3b30",
+            height: 44,
             borderRadius: 8,
             justifyContent: "center",
             alignItems: "center",
+            marginTop: 10,
         },
         logoutButtonText: {
-            color: theme.colors.text,
+            color: "white",
             fontSize: 16,
             fontWeight: "500",
         },
