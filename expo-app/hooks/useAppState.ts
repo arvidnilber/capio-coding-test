@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
 import { useAuthStore } from "@/store/authStore";
 
-const BACKGROUND_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
-
 export const useAppState = () => {
     const appState = useRef(AppState.currentState);
     const { setBackgroundTime, checkAuthStatus, logout, isAuthenticated } =

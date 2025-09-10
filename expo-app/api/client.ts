@@ -1,10 +1,7 @@
+import type { AuthResponse, Account, ErrorResponse } from "@/types/api";
+
 const API_BASE_URL =
     process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000";
-
-export interface ApiError {
-    error: string;
-    status: number;
-}
 
 class ApiClient {
     private baseURL: string;
@@ -87,23 +84,23 @@ class ApiClient {
     }
 
     // Auth endpoints
-    async login(username: string, password: string) {
-        return this.makeRequest("/login", {
+    async login(username: string, password: string): Promise<AuthResponse> {
+        return this.makeRequest<AuthResponse>("/login", {
             method: "POST",
             body: JSON.stringify({ username, password }),
         });
     }
 
-    async refreshToken(refreshToken: string) {
-        return this.makeRequest("/refresh", {
+    async refreshToken(refreshToken: string): Promise<AuthResponse> {
+        return this.makeRequest<AuthResponse>("/refresh", {
             method: "POST",
             body: JSON.stringify({ refreshToken }),
         });
     }
 
     // Account endpoints
-    async getAccount() {
-        return this.makeRequest(
+    async getAccount(): Promise<Account> {
+        return this.makeRequest<Account>(
             "/account",
             {
                 method: "GET",
@@ -112,8 +109,8 @@ class ApiClient {
         );
     }
 
-    async updateAccount(phone: string) {
-        return this.makeRequest(
+    async updateAccount(phone: string): Promise<Account> {
+        return this.makeRequest<Account>(
             "/account",
             {
                 method: "PATCH",

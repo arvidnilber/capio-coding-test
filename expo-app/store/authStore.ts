@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { MMKV } from "react-native-mmkv";
+import type { User, AuthTokens, AuthResponse } from "@/types/api";
 
 // MMKV storage instance
 const storage = new MMKV();
@@ -7,6 +8,7 @@ const storage = new MMKV();
 // API base URL
 const API_BASE_URL =
     process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const BACKGROUND_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // Auth API helper functions (no circular dependency)
 const authApi = {
@@ -24,7 +26,7 @@ const authApi = {
             throw new Error(errorData.error || "Login failed");
         }
 
-        return await response.json();
+        return (await response.json()) as AuthResponse;
     },
 
     async refreshToken(refreshToken: string) {
@@ -41,7 +43,7 @@ const authApi = {
             throw new Error(errorData.error || "Token refresh failed");
         }
 
-        return await response.json();
+        return (await response.json()) as AuthResponse;
     },
 };
 
@@ -54,19 +56,6 @@ const STORAGE_KEYS = {
     USER_DATA: "user_data",
     LAST_BACKGROUND_TIME: "last_background_time",
 } as const;
-
-export interface User {
-    userId: number;
-    username: string;
-    phone: string;
-}
-
-export interface AuthTokens {
-    accessToken: string;
-    refreshToken: string;
-    accessTokenExp: number;
-    refreshTokenExp: number;
-}
 
 interface AuthState {
     // State
@@ -105,7 +94,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: true, error: null });
 
         try {
-            const tokens: AuthTokens = await authApi.login(username, password);
+            const tokens = await authApi.login(username, password);
 
             // Store tokens
             storage.set(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken);
@@ -154,9 +143,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         try {
-            const newTokens: AuthTokens = await authApi.refreshToken(
-                tokens.refreshToken
-            );
+            const newTokens = await authApi.refreshToken(tokens.refreshToken);
 
             // Store new tokens
             storage.set(STORAGE_KEYS.ACCESS_TOKEN, newTokens.accessToken);
@@ -206,7 +193,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
 
         // Check background time (10 minutes = 600 seconds)
-        if (lastBackgroundTime && Date.now() - lastBackgroundTime > 600000) {
+        if (
+            lastBackgroundTime &&
+            Date.now() - lastBackgroundTime > BACKGROUND_TIMEOUT
+        ) {
             get().logout();
             return false;
         }
@@ -235,12 +225,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 accessTokenExp &&
                 refreshTokenExp
             ) {
-                const tokens: AuthTokens = {
+                const tokens = {
                     accessToken,
                     refreshToken,
                     accessTokenExp,
                     refreshTokenExp,
-                };
+                } as AuthTokens;
 
                 set({
                     tokens,

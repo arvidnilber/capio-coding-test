@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     View,
     Text,
@@ -10,14 +10,22 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
-import { useAuthStore, type User } from "@/store/authStore";
+import { useAuthStore } from "@/store/authStore";
+import type { User } from "@/types/api";
 import { apiClient } from "@/api/client";
+import { useTheme } from "@react-navigation/native";
+import { ThemedText } from "@/components/ThemedText";
+import { CustomTheme } from "../_layout";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
-    const { user, updateUser } = useAuthStore();
+    const { user, updateUser, logout } = useAuthStore();
     const [phone, setPhone] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    const theme = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     useEffect(() => {
         if (user?.phone) {
@@ -29,7 +37,7 @@ export default function ProfileScreen() {
         setIsLoading(true);
         try {
             const userData = await apiClient.getAccount();
-            updateUser(userData as User);
+            updateUser(userData);
             setPhone(userData.phone || "");
         } catch (error) {
             console.error("Failed to fetch user data:", error);
@@ -66,6 +74,11 @@ export default function ProfileScreen() {
         }
     };
 
+    const handleLogout = () => {
+        logout();
+        router.replace("/login");
+    };
+
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
@@ -80,43 +93,14 @@ export default function ProfileScreen() {
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <View style={styles.header}>
-                <Text style={styles.title}>Profile</Text>
-                <Text style={styles.subtitle}>
-                    Manage your account information
-                </Text>
-            </View>
-
             <View style={styles.content}>
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>User Information</Text>
-                    {user ? (
-                        <View style={styles.userInfo}>
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>Username:</Text>
-                                <Text style={styles.infoValue}>
-                                    {user.username}
-                                </Text>
-                            </View>
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>User ID:</Text>
-                                <Text style={styles.infoValue}>
-                                    {user.userId}
-                                </Text>
-                            </View>
-                        </View>
-                    ) : (
-                        <Text style={styles.noData}>
-                            No user data available
-                        </Text>
-                    )}
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Phone Number</Text>
-                    <Text style={styles.description}>
+                    <ThemedText type="title" style={styles.cardTitle}>
+                        Phone Number
+                    </ThemedText>
+                    <ThemedText type="subtitle" style={styles.description}>
                         Update your phone number to keep your account secure.
-                    </Text>
+                    </ThemedText>
 
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Phone Number</Text>
@@ -165,146 +149,155 @@ export default function ProfileScreen() {
                         </Text>
                     )}
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={handleLogout}
+                >
+                    <Text style={styles.logoutButtonText}>Logout</Text>
+                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#f5f5f5",
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f5f5f5",
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: "#666",
-    },
-    header: {
-        backgroundColor: "white",
-        paddingTop: 60,
-        paddingBottom: 24,
-        paddingHorizontal: 24,
-        borderBottomWidth: 1,
-        borderBottomColor: "#eee",
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 4,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: "#666",
-    },
-    content: {
-        flex: 1,
-        padding: 24,
-    },
-    card: {
-        backgroundColor: "white",
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 24,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
+const createStyles = (theme: CustomTheme) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
         },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#333",
-        marginBottom: 16,
-    },
-    description: {
-        fontSize: 14,
-        color: "#666",
-        marginBottom: 20,
-    },
-    userInfo: {
-        gap: 12,
-    },
-    infoRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    infoLabel: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#666",
-    },
-    infoValue: {
-        fontSize: 16,
-        color: "#333",
-    },
-    noData: {
-        fontSize: 16,
-        color: "#666",
-        fontStyle: "italic",
-    },
-    inputContainer: {
-        marginBottom: 24,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#333",
-        marginBottom: 8,
-    },
-    input: {
-        height: 52,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        fontSize: 16,
-        backgroundColor: "white",
-    },
-    hint: {
-        fontSize: 12,
-        color: "#666",
-        marginTop: 4,
-    },
-    saveButton: {
-        height: 52,
-        backgroundColor: "#007AFF",
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    saveButtonDisabled: {
-        backgroundColor: "#ccc",
-    },
-    saveButtonText: {
-        color: "white",
-        fontSize: 18,
-        fontWeight: "600",
-    },
-    refreshButton: {
-        backgroundColor: "white",
-        height: 44,
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#007AFF",
-    },
-    refreshButtonText: {
-        color: "#007AFF",
-        fontSize: 16,
-        fontWeight: "500",
-    },
-});
+        loadingContainer: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f5f5f5",
+        },
+        loadingText: {
+            marginTop: 16,
+            fontSize: 16,
+            color: "#666",
+        },
+        title: {
+            fontSize: 18,
+            color: theme.colors.text,
+        },
+        subtitle: {
+            fontSize: 16,
+            color: theme.colors.text,
+        },
+        content: {
+            flex: 1,
+            padding: 24,
+        },
+        card: {
+            backgroundColor: theme.colors.card,
+            borderRadius: 12,
+            padding: 20,
+            marginBottom: 24,
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+        },
+        cardTitle: {
+            fontSize: 26,
+            paddingBottom: 10,
+        },
+        description: {
+            fontSize: 16,
+            marginBottom: 20,
+            fontWeight: "regular",
+        },
+        userInfo: {
+            gap: 12,
+        },
+        infoRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
+        infoLabel: {
+            fontSize: 16,
+            fontWeight: "600",
+            color: "#666",
+        },
+        infoValue: {
+            fontSize: 16,
+            color: "#333",
+        },
+        noData: {
+            fontSize: 16,
+            color: "#666",
+            fontStyle: "italic",
+        },
+        inputContainer: {
+            marginBottom: 24,
+        },
+        label: {
+            fontSize: 16,
+            fontWeight: "600",
+            color: theme.colors.secondaryText,
+            marginBottom: 8,
+        },
+        input: {
+            height: 52,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 16,
+            fontSize: 16,
+            color: theme.colors.text,
+            backgroundColor: theme.colors.card,
+        },
+        hint: {
+            fontSize: 12,
+            color: theme.colors.secondaryText,
+            marginTop: 8,
+        },
+        saveButton: {
+            height: 52,
+            backgroundColor: theme.colors.primary,
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        saveButtonDisabled: {
+            backgroundColor: "#ccc",
+        },
+        saveButtonText: {
+            color: "white",
+            fontSize: 18,
+            fontWeight: "600",
+        },
+        refreshButton: {
+            backgroundColor: theme.colors.card,
+            height: 44,
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: theme.colors.primary,
+        },
+        refreshButtonText: {
+            color: theme.colors.text,
+            fontSize: 16,
+            fontWeight: "500",
+        },
+        logoutButton: {
+            backgroundColor: theme.colors.card,
+            height: 52,
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        logoutButtonText: {
+            color: theme.colors.text,
+            fontSize: 16,
+            fontWeight: "500",
+        },
+    });

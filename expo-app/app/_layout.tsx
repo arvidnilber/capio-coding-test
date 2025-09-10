@@ -1,6 +1,7 @@
 import {
     DarkTheme,
     DefaultTheme,
+    Theme,
     ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -12,7 +13,11 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useAuthStore } from "@/store/authStore";
 import { useAppState } from "@/hooks/useAppState";
-
+export type CustomTheme = Theme & {
+    colors: {
+        secondaryText: string;
+    };
+};
 export default function RootLayout() {
     const colorScheme = useColorScheme();
     const { loadFromStorage } = useAuthStore();
@@ -34,9 +39,29 @@ export default function RootLayout() {
         return null;
     }
 
+    const darkTheme: CustomTheme = {
+        ...DarkTheme,
+        colors: {
+            ...DarkTheme.colors,
+            primary: "#0d3050",
+            border: "#737373",
+            secondaryText: "#bbbbbb",
+        },
+    };
+
+    const defaultTheme: CustomTheme = {
+        ...DefaultTheme,
+        colors: {
+            ...DefaultTheme.colors,
+            primary: "#0d3050",
+            border: "#f0f0f0",
+            secondaryText: "#666",
+        },
+    };
+
     return (
         <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            value={colorScheme === "dark" ? darkTheme : defaultTheme}
         >
             <Stack>
                 <Stack.Screen name="login" options={{ headerShown: false }} />
