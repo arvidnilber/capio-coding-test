@@ -1,9 +1,13 @@
 # Capio Coding Test
 
-I used Expo Router since I believe it's the simplest way to work with React Native today. 
-It's like Next.JS but for React Native.
+I used Expo Router since I believe it's the simplest way to work with React Native today. And it takes alot more time to setup a pure react native app and it's harder to read imo. 
+
+It's like Next.JS but for React Native. It also gives you a web app.
 
 Let Claude do the boilerplate from the requirements. But had to make changes to layout, colors and auth logic. 
+
+Used MMKV and Zustand for store management, MMKV is super perforant and zustand has a really good hook api for react apps. 
+
 
 To run the expo app, just install using npm, install the expo run npx expo run:(ios/android/web).
 

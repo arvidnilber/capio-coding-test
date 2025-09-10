@@ -8,13 +8,14 @@ import {
     Alert,
 } from "react-native";
 import { router } from "expo-router";
-import { useAuthStore, type User } from "@/store/authStore";
+import { useAuthStore } from "@/store/authStore";
+import type { User } from "@/types/api";
 import { apiClient } from "@/api/client";
 import { Theme, useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 
 export default function HomeScreen() {
-    const { user, updateUser, logout, isAuthenticated } = useAuthStore();
+    const { user, updateUser, isAuthenticated } = useAuthStore();
     const [isLoading, setIsLoading] = React.useState(false);
     const theme = useTheme();
 
@@ -38,20 +39,6 @@ export default function HomeScreen() {
             fetchUserData();
         }
     }, [fetchUserData, isAuthenticated, user]);
-
-    const handleLogout = () => {
-        Alert.alert("Logout", "Are you sure you want to logout?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Logout",
-                style: "destructive",
-                onPress: () => {
-                    logout();
-                    router.replace("/login");
-                },
-            },
-        ]);
-    };
 
     const navigateToProfile = () => {
         router.push("/(tabs)/profile");
@@ -109,55 +96,9 @@ const createStyles = (theme: Theme) =>
             paddingBottom: 24,
             paddingHorizontal: 24,
         },
-        title: {
-            fontSize: 28,
-            fontWeight: "bold",
-            marginBottom: 4,
-            color: theme.colors.text,
-        },
-        subtitle: {
-            fontSize: 18,
-            color: "#666",
-        },
         content: {
             flex: 1,
             paddingHorizontal: 24,
-        },
-        card: {
-            backgroundColor: "white",
-            borderRadius: 12,
-            padding: 20,
-            marginBottom: 24,
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
-        },
-        cardTitle: {
-            fontSize: 18,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 16,
-        },
-        userInfo: {
-            gap: 12,
-        },
-        infoItem: {
-            fontSize: 16,
-            color: "#333",
-        },
-        infoLabel: {
-            fontWeight: "600",
-            color: "#666",
-        },
-        noData: {
-            fontSize: 16,
-            color: "#666",
-            fontStyle: "italic",
         },
         profileButton: {
             backgroundColor: theme.colors.primary,
@@ -168,33 +109,6 @@ const createStyles = (theme: Theme) =>
             marginBottom: 16,
         },
         profileButtonText: {
-            color: "white",
-            fontSize: 18,
-            fontWeight: "600",
-        },
-        refreshButton: {
-            backgroundColor: "white",
-            height: 44,
-            borderRadius: 8,
-            justifyContent: "center",
-            alignItems: "center",
-            borderWidth: 1,
-            borderColor: "#007AFF",
-        },
-        refreshButtonText: {
-            color: "#007AFF",
-            fontSize: 16,
-            fontWeight: "500",
-        },
-        logoutButton: {
-            backgroundColor: "#ff3b30",
-            height: 52,
-
-            borderRadius: 8,
-            justifyContent: "center",
-            alignItems: "center",
-        },
-        logoutButtonText: {
             color: "white",
             fontSize: 18,
             fontWeight: "600",

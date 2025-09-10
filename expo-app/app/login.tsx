@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
 import { Theme, useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
+import DismissKeyboard from "@/components/DismissKeyboard";
 
 export default function LoginScreen() {
     const [username, setUsername] = useState("");
@@ -41,81 +42,85 @@ export default function LoginScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <ThemedText style={styles.title} type="title">
-                        Welcome to Capio Test
-                    </ThemedText>
-                    <ThemedText style={styles.subtitle} type="subtitle">
-                        Sign in to your account
-                    </ThemedText>
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Username</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={username}
-                            onChangeText={setUsername}
-                            placeholder="Enter your username"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            editable={!isLoading}
-                        />
+        <DismissKeyboard>
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        <ThemedText style={styles.title} type="title">
+                            Welcome to Capio Test
+                        </ThemedText>
+                        <ThemedText style={styles.subtitle} type="subtitle">
+                            Sign in to your account
+                        </ThemedText>
                     </View>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Password</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={password}
-                            onChangeText={setPassword}
-                            placeholder="Enter your password"
-                            secureTextEntry
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            editable={!isLoading}
-                        />
-                    </View>
-
-                    {error && (
-                        <View style={styles.errorContainer}>
-                            <Text style={styles.errorText}>{error}</Text>
+                    <View style={styles.form}>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Username</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={username}
+                                onChangeText={setUsername}
+                                placeholder="Enter your username"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                editable={!isLoading}
+                            />
                         </View>
-                    )}
 
-                    <TouchableOpacity
-                        style={[
-                            styles.loginButton,
-                            isLoading && styles.loginButtonDisabled,
-                        ]}
-                        onPress={handleLogin}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <Text style={styles.loginButtonText}>Sign In</Text>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Password</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={password}
+                                onChangeText={setPassword}
+                                placeholder="Enter your password"
+                                secureTextEntry
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                editable={!isLoading}
+                            />
+                        </View>
+
+                        {error && (
+                            <View style={styles.errorContainer}>
+                                <Text style={styles.errorText}>{error}</Text>
+                            </View>
                         )}
-                    </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.testButton}
-                        onPress={fillTestCredentials}
-                        disabled={isLoading}
-                    >
-                        <Text style={styles.testButtonText}>
-                            Fill in test credentials
-                        </Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                styles.loginButton,
+                                isLoading && styles.loginButtonDisabled,
+                            ]}
+                            onPress={handleLogin}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <Text style={styles.loginButtonText}>
+                                    Sign In
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.testButton}
+                            onPress={fillTestCredentials}
+                            disabled={isLoading}
+                        >
+                            <Text style={styles.testButtonText}>
+                                Fill in test credentials
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </DismissKeyboard>
     );
 }
 

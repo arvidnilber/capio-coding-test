@@ -2,9 +2,11 @@ import { useEffect } from "react";
 import { router } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 export default function Index() {
     const { isAuthenticated, checkAuthStatus } = useAuthStore();
+    const theme = useTheme();
 
     useEffect(() => {
         // Check authentication status and navigate accordingly
@@ -20,7 +22,7 @@ export default function Index() {
     // Show loading spinner while determining auth status
     return (
         <View style={styles.container}>
-            <ActivityIndicator size="large" color="#007AFF" />
+            <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
     );
 }

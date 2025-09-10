@@ -13,10 +13,11 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import type { User } from "@/types/api";
 import { apiClient } from "@/api/client";
-import { useTheme } from "@react-navigation/native";
+import { Theme, useTheme } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
-import { CustomTheme } from "../_layout";
+import type { CustomTheme } from "../_layout";
 import { router } from "expo-router";
+import DismissKeyboard from "@/components/DismissKeyboard";
 
 export default function ProfileScreen() {
     const { user, updateUser, logout } = useAuthStore();
@@ -89,78 +90,81 @@ export default function ProfileScreen() {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <View style={styles.content}>
-                <View style={styles.card}>
-                    <ThemedText type="title" style={styles.cardTitle}>
-                        Phone number
-                    </ThemedText>
-                    <ThemedText type="subtitle" style={styles.description}>
-                        Update your phone number to keep your account secure.
-                    </ThemedText>
+        <DismissKeyboard>
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <View style={styles.content}>
+                    <View style={styles.card}>
+                        <ThemedText type="title" style={styles.cardTitle}>
+                            Phone number
+                        </ThemedText>
+                        <ThemedText type="subtitle" style={styles.description}>
+                            Update your phone number to keep your account
+                            secure.
+                        </ThemedText>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Phone Number</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={phone}
-                            onChangeText={setPhone}
-                            placeholder="Enter your phone number"
-                            keyboardType="phone-pad"
-                            editable={!isSaving}
-                            maxLength={15}
-                        />
-                        <Text style={styles.hint}>
-                            Must be between 10-15 characters
-                        </Text>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Phone Number</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={phone}
+                                onChangeText={setPhone}
+                                placeholder="Enter your phone number"
+                                keyboardType="phone-pad"
+                                editable={!isSaving}
+                                maxLength={15}
+                            />
+                            <Text style={styles.hint}>
+                                Must be between 10-15 characters
+                            </Text>
+                        </View>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.saveButton,
+                                isSaving && styles.saveButtonDisabled,
+                            ]}
+                            onPress={handleSavePhone}
+                            disabled={isSaving}
+                        >
+                            {isSaving ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <Text style={styles.saveButtonText}>
+                                    {user?.phone ? "Update" : "Save"}
+                                </Text>
+                            )}
+                        </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity
-                        style={[
-                            styles.saveButton,
-                            isSaving && styles.saveButtonDisabled,
-                        ]}
-                        onPress={handleSavePhone}
-                        disabled={isSaving}
+                        style={styles.refreshButton}
+                        onPress={fetchUserData}
+                        disabled={isLoading}
                     >
-                        {isSaving ? (
-                            <ActivityIndicator color="white" />
+                        {isLoading ? (
+                            <ActivityIndicator color="#007AFF" />
                         ) : (
-                            <Text style={styles.saveButtonText}>
-                                {user?.phone ? "Update" : "Save"}
+                            <Text style={styles.refreshButtonText}>
+                                Refresh Profile
                             </Text>
                         )}
                     </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.logoutButton}
+                        onPress={handleLogout}
+                    >
+                        <Text style={styles.logoutButtonText}>Logout</Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                    style={styles.refreshButton}
-                    onPress={fetchUserData}
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <ActivityIndicator color="#007AFF" />
-                    ) : (
-                        <Text style={styles.refreshButtonText}>
-                            Refresh Profile
-                        </Text>
-                    )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                >
-                    <Text style={styles.logoutButtonText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </DismissKeyboard>
     );
 }
 
-const createStyles = (theme: CustomTheme) =>
+const createStyles = (theme: Theme) =>
     StyleSheet.create({
         container: {
             flex: 1,
@@ -175,14 +179,6 @@ const createStyles = (theme: CustomTheme) =>
             marginTop: 16,
             fontSize: 16,
             color: "#666",
-        },
-        title: {
-            fontSize: 18,
-            color: theme.colors.text,
-        },
-        subtitle: {
-            fontSize: 16,
-            color: theme.colors.text,
         },
         content: {
             flex: 1,
@@ -212,28 +208,6 @@ const createStyles = (theme: CustomTheme) =>
             fontSize: 16,
             marginBottom: 20,
             fontWeight: "regular",
-        },
-        userInfo: {
-            gap: 12,
-        },
-        infoRow: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-        },
-        infoLabel: {
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#666",
-        },
-        infoValue: {
-            fontSize: 16,
-            color: "#333",
-        },
-        noData: {
-            fontSize: 16,
-            color: "#666",
-            fontStyle: "italic",
         },
         inputContainer: {
             marginBottom: 24,
